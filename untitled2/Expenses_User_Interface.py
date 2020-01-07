@@ -6,8 +6,11 @@ from Utility_User_Interface import are_you_sure
 
 # use listbox widget to display all expense names so user can remove or edit the one they want
 def edit_expense_interaction():
-    filename = 'Expenses'
+    print('opened edit_expense_interaction')
     from Main_Program import MainProgram
+    filename = 'Expenses'
+    #temp_dict = MainProgram().open_file(filename)
+    print('opened the file')
 
     # Asks for confirmation to delete expense
     def confirm_request():
@@ -16,23 +19,34 @@ def edit_expense_interaction():
     # Removes expense from dictionary and from the listbox
     def delete_function():
         temp = lb.get(ANCHOR)
-        print('here')
+        print('got the item from the listbox')
         MainProgram().delete_dictionary_item(temp, filename)
-        print('there')
+        print('sent to delete_dictionary_item function')
         lb.delete(ANCHOR)
-        print('again')
+        print('removed the item from the listbox')
 
     popup = tk.Tk()
-    popup.title('Remove Bill')
-    temp_dict = MainProgram().open_file(filename)
+    popup.title('Remove Expense')
+
+    # Gets the requested values of the height and width.
+    window_width = popup.winfo_reqwidth()
+    window_height = popup.winfo_reqheight()
+
+    # Gets both half the screen width/height and window width/height
+    position_right = int(popup.winfo_screenwidth() / 2 - window_width / 2)
+    position_down = int(popup.winfo_screenheight() / 2 - window_height / 2)
+
+    # Positions the window in the center of the page.
+    popup.geometry("+{}+{}".format(position_right, position_down))
 
     Label(popup, text='Select an Expense').grid(row=0, columnspan=2, padx=5, pady=5)
 
     # Creates a listbox with names of the expenses (uses keys from 'Expenses.json')
     lb = Listbox(popup, selectmode=SINGLE)
     lb.grid(row=1, columnspan=2, padx=5, pady=5)
-    for key in temp_dict:
+    for key in MainProgram().open_file(filename):
         lb.insert(END, key)
+        print('looked in the dictionary to populate the listbox')
 
     eb = Button(popup, text="Edit")
     eb.grid(row=2, column=0, padx=5, pady=5)
@@ -51,11 +65,6 @@ def bill_add_interaction():
     filename = 'Expenses'
     from Main_Program import MainProgram
 
-    add_bill = tk.Tk()
-    add_bill.title('Add/Edit Bills')
-
-    dd_variable = StringVar(add_bill)
-
     # Converts input from Entry widgets into variables and arranges into dictionary entry to update the dictionary
     def return_variables():
         bill_name = bill_name_entry.get()
@@ -64,8 +73,24 @@ def bill_add_interaction():
         interest = float(interest_entry.get())
         total = float(total_entry.get())
 
-        new_bill = {bill_name: [amount_due, due_date, interest, total]}
-        MainProgram().update_dictionary(new_bill, filename)
+        new_item = {bill_name: [amount_due, due_date, interest, total]}
+        MainProgram().update_dictionary(new_item, filename)
+
+    add_bill = tk.Tk()
+    add_bill.title('Add/Edit Expenses')
+
+    # Gets the requested values of the height and width.
+    window_width = add_bill.winfo_reqwidth()
+    window_height = add_bill.winfo_reqheight()
+
+    # Gets both half the screen width/height and window width/height
+    position_right = int(add_bill.winfo_screenwidth() / 2 - window_width / 2)
+    position_down = int(add_bill.winfo_screenheight() / 2 - window_height / 2)
+
+    # Positions the window in the center of the page.
+    add_bill.geometry("+{}+{}".format(position_right, position_down))
+
+    dd_variable = StringVar(add_bill)
 
     # In txt file:
         # 1st item is Bill Name,
@@ -73,7 +98,7 @@ def bill_add_interaction():
         # 3rd item = Due Date
         # 4th item = Interest Rate
         # 5th item = Total Due
-    Label(add_bill, text='Bill Name:').grid(row=0, column=0, sticky=E, padx=10, pady=5)
+    Label(add_bill, text='Expense Name:').grid(row=0, column=0, sticky=E, padx=10, pady=5)
     bill_name_entry = Entry(add_bill)
     bill_name_entry.grid(row=0, column=1, padx=10)
 
@@ -82,12 +107,10 @@ def bill_add_interaction():
     amount_due_entry.grid(row=1, column=1)
 
     # Dropdown for selecting week of the month the bill is due
-    Label(add_bill, text='What week do you pay this bill?').grid(row=2, column=0, sticky=E, padx=10, pady=5)
-    choices = ['1', '2', '3', '4']
-    # set the default option
-    #dd_variable.set('1')
-    due_date_entry = OptionMenu(add_bill, dd_variable, *choices)
+    Label(add_bill, text='What week do you pay this expense?').grid(row=2, column=0, sticky=E, padx=10, pady=5)
+    choices = ['0', '1', '2', '3', '4']
 
+    due_date_entry = OptionMenu(add_bill, dd_variable, *choices)
 
     due_date_entry.grid(row=2, column=1)
     due_date_entry = dd_variable
