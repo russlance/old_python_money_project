@@ -21,7 +21,7 @@ def save_pop():
     label = Label(save_popup, text='Save Successful')
     label.grid(row=0, column=0, padx=20, pady=20)
 
-    save_popup.after(1500, lambda: save_popup.destroy())
+    save_popup.after(1500, save_popup.destroy)
     save_popup.mainloop()
 
 
